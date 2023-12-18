@@ -1,0 +1,32 @@
+1) Acquisition des Données :
+
+Vous avez déjà acquis des données et les avez stockées dans un fichier CSV.
+S'assurer que les données viennent bien de nous
+
+2) Nettoyage des Données :
+
+Lisez les données à partir du fichier CSV.
+Vérifiez s'il y a des valeurs manquantes ou aberrantes 
+et traitez-les (par exemple, en les supprimant ou en les remplaçant par des valeurs moyennes).
+Normalisez les données si nécessaire, surtout si les gammes de valeurs varient largement.
+
+3) Prétraitement des Données :
+
+Effectuez une analyse temporelle et fréquentielle des données pour extraire des caractéristiques significatives.
+Sélectionnez les caractéristiques les plus pertinentes pour la reconnaissance de mouvement.
+
+4) Entraînement du Modèle :
+
+Sélectionnez un modèle de machine learning approprié. Pour une classification binaire (mouvement de pendule ou non), des modèles comme la régression logistique, les SVM (machines à vecteurs de support), ou même un réseau de neurones peuvent être appropriés.
+Divisez vos données en un ensemble d'entraînement et un ensemble de test.
+Entraînez votre modèle sur l'ensemble d'entraînement.
+
+5) Évaluation du Modèle :
+
+Testez le modèle sur l'ensemble de test pour évaluer sa performance.
+Utilisez des métriques comme la précision, le rappel, la F1-score, et la matrice de confusion pour évaluer la qualité de la classification.
+Amélioration et Itération :
+
+6) En fonction des résultats de l'évaluation, vous pourriez avoir besoin d'ajuster le prétraitement des données, de changer 
+le modèle, ou de peaufiner les paramètres du modèle.
+Répétez le processus jusqu'à obtenir des résultats satisfaisants.

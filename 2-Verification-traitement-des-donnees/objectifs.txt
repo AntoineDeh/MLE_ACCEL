@@ -1,0 +1,101 @@
+Afficher le contenu des fichiers CSV
+
+Effectuer une analyse temporelle et
+fréquentielle des signaux en Python avec les
+bibliothèques suivantes :
+
+●Pandas (analyse et manipulation de données)
+
+●Numpy (calcul scientifique)
+
+●Matplotlib (visualisation)
+
+Enregistrer uniquement les données pertinentes
+pour entraîner un réseau de neurones
+
+
+/////////////
+
+quel genre de balancement ?
+Mouvement de gauche vers la droite
+comment le caracteriser ?
+Par le temps
+constituer un protocle d'oscillations 
+c'est quoi un balancement ? le caractériser 
+caracteriser le problème
+que veut on mesurer ?
+analyser
+
+problèmes possibles ?
+
+
+dans le pré acquisition :
+structurer avant le protocole du balancement
+
+2)
+accelerer le processus d'acquisition :
+faire de la data augmentation ? pas de cours dessus
+en faisant rotation ?
+
+ou 
+
+acquisition de couches spécifiques
+
+//
+
+voir datasheet
+voir propriétés physiques accelerometer : dans le manipulation
+".... de fonctionnement de l'accelerometer"
+
+//
+
+reflexes
+20 ms
+2G
+
+verif :
+- bonnes valeurs qui correspondent à cela
+- toutes les 20 ms on a de nouvelles données
+
+///
+code python :
+afficher oscillations sinusoidale
+
+acceleration en fonction du temps en secondes 
+pour x et Y
+
+afficher FFT :
+quelle frequence dominante ? elle est assez basse normalement
+
+voir condition de shannon
+
+
+/// 
+
+voir quand on commence à balancier
+
+///
+à partir de combien de pas on considère un balancement ?
+un aller-retour
+ou
+un aller
+
+-> on est dans regime periodique :  on est en etat de balancement
+
+///
+temps d'acquisition ??
+
+1 secondes ? : 50 points, car toutes les 20 ms
+combien de données ??
+
+
+///
+objectifs du projet :
+
+Savoir si notre mouvement avec l'accelerometre est un mouvement de pendule(balancier) ou non ?
+
+-  J'ai acquis des Données dans un fichier CSV
+- Il faut nettoyer les données
+- Ensuite entrainement
+- evaluation
+

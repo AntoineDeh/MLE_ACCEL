@@ -1,0 +1,22 @@
+1) Calculer les Transformées de Fourier pour Tous les Axes :
+
+Effectuez une transformée de Fourier rapide (FFT) non seulement pour l'accélération en X, mais aussi pour Y et Z, 
+ainsi que pour les données du gyroscope.
+
+2) Extraction des Caractéristiques :
+
+Identifiez les fréquences dominantes et leurs amplitudes dans chaque axe d'accélération et de gyroscope.
+Enregistrez ces caractéristiques comme des entrées potentielles pour votre réseau de neurones.
+
+3) Nettoyage et Normalisation des Données :
+
+Si nécessaire, nettoyez les données (par exemple, en supprimant ou en interpolant les valeurs manquantes).
+Normalisez les données, surtout si les amplitudes varient considérablement.
+
+4) Séparation des Données en Ensembles d'Entraînement et de Test :
+
+Divisez vos données en ensembles d'entraînement et de test pour évaluer la performance de votre modèle.
+Enregistrement des Données Finale :
+
+5) Enregistrez les caractéristiques extraites dans un nouveau fichier CSV ou DataFrame pour les utiliser 
+dans l'entraînement du réseau de neurones.
