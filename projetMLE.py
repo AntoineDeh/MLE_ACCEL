@@ -26,7 +26,7 @@ data = None
 root = None
 
 def init():
-    # Initialisation de la graine aléatoire pour la reproductibilité
+    
     seed = 0
     np.random.seed(seed)
     tf.random.set_seed(seed)
@@ -114,8 +114,7 @@ def save_model(model):
 def train_test_split_data():
     """ Sépare les données en ensembles d'entraînement et de test """
     global X_train, X_test, y_train, y_test, data
-    # Ici, vous devez définir x et y en fonction de vos données
-    # Exemple : x = data.drop('label_column', axis=1), y = data['label_column']
+  
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
 
 def compile_model():
@@ -179,10 +178,11 @@ def main_menu():
         train_test_split_data()
         compile_model()
         train_model()
-        print_accuracy()
+        
 
     def evaluate():
         evaluate_model()
+        print_accuracy()
 
     # Menu buttons
     tk.Button(root, text='Load CSV and Plot', command=load_and_plot).pack(fill=tk.X)
@@ -198,29 +198,3 @@ if __name__ == "__main__":
 
 
 
-'''
-
-if __name__ == "__main__":
-   init()
-    load_csv_file()
-    
-   #Pour tous les fichiers de Datas faire :
-    filter_data()
-    apply_filter()
-    plot_data()
-    analyse_frequentiel() // avoir un bouton suivant ensuite pour passer au suivant // chacun de ces fichiers vont dans le dossier output
-    ############""puis 
-
-    build_model()
-    save_model()
-
-    train_test()
-    compile()
-
-
-    train()
-    print_accuracy()
-  ///Autant de fois que l'on veut on peut faire : 
-    evaluation() // un bouton suivant apparait après pour passer à un autre ou faire exit
-
-'''

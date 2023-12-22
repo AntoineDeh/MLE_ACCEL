@@ -4,7 +4,24 @@ Membres du binôme :
 - Antoine DEHOUX
 - Fatoumata TRAORE
 
-## Classement des modèles
 
-1. dataset_v1_rms_01_binary_crossentropy_e200_b20_vp02
-2. dataset_v1_adam_05_binary_crossentropy_e400_b30_vp02
+Le projet ne fonctionne pas entièrement, mais vous pourrrez trouver dans le code python nos efforts pour faire ce projet.
+
+Mot de la part d'Antoine Dehoux:
+
+Monsieur,
+
+En raison de problèmes de santé, j'ai été dans l'incapacité d'assister à deux cours de machine learning. 
+J'ai en ma possession tous les justificatifs médicaux si nécessaires.
+
+Bien que j'aie rattrapé autant que possible le contenu des cours et les exercices associés, 
+je n'ai malheureusement pas pu contribuer de manière optimale au projet.
+
+Je vous serais reconnaissant de prendre en compte ces circonstances exceptionnelles 
+et j'espère que vous ferez preuve de compréhension à ce sujet.
+
+Je reste à votre disposition pour toute information complémentaire.
+
+Cordialement,
+
+Dehoux Antoine
