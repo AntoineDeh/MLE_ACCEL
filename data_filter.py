@@ -1,56 +1,95 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
-FILTRE = 0
+def load_csv_file():
+    """ Charge un fichier CSV et retourne les données. """
+    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    if file_path:
+        try:
+            return pd.read_csv(file_path)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load file: {e}")
+            return None
+    else:
+        return None
 
-if __name__ == '__main__':
-    # Lire les données à partir du fichier CSV
-    donnees = pd.read_csv('input/SansBalancier.csv')
-    # donnees = donnees[(donnees['T [ms]'] >= 12500) & (donnees['T [ms]'] <= 27500)]
-    # donnees.reset_index(drop=True, inplace=True)
+def filter_data(data):
+    """ Demande à l'utilisateur s'il souhaite filtrer les données et les filtre si nécessaire. """
+    t_min = simpledialog.askinteger("Time Min", "Enter minimum time (T min in ms):", parent=root)
+    t_max = simpledialog.askinteger("Time Max", "Enter maximum time (T max in ms):", parent=root)
+    if t_min is not None and t_max is not None:
+        filtered_data = data[(data['T [ms]'] >= t_min) & (data['T [ms]'] <= t_max)]
+        return filtered_data.reset_index(drop=True)
+    return data
 
-    if FILTRE:
-        # Fréquence d'échantillonnage
-        fs = 1 / ((donnees['T [ms]'][1] - donnees['T [ms]'][0]) / 1000.0)  # Conversion de ms en secondes
+def apply_filter(data, fs, fc, order):
+    """ Applique un filtre passe-bas Butterworth aux données. """
+    b, a = butter(order, fc / (0.5 * fs), btype='low', analog=False)
+    return filtfilt(b, a, data)
 
-        # Fréquence de coupure du filtre passe-bas (en Hz)
-        fc = 10  # Exemple de fréquence de coupure, à ajuster selon les besoins
+def plot_data(data):
+    """ Effectue des visualisations des données. """
+    if data.empty:
+        messagebox.showinfo("Info", "No data to plot.")
+        return
 
-        # Ordonnée du filtre
-        ordre = 2  # L'ordre du filtre Butterworth
+    fs = 1 / ((data['T [ms]'][1] - data['T [ms]'][0]) / 1000.0)  # Fréquence d'échantillonnage
+    fc = 10  # Fréquence de coupure
+    order = 2  # Ordonnée du filtre
 
-        # Créer le filtre Butterworth
-        b, a = butter(ordre, fc / (0.5 * fs), btype='low', analog=False)
+    data_acc_y_filtered = apply_filter(data['AccY [mg]'], fs, fc, order)
 
-        # Appliquer le filtre aux données
-        donnees_acc_y_filtrees = filtfilt(b, a, donnees['AccY [mg]'])
+    fig = Figure(figsize=(10, 6))
+    ax = fig.add_subplot(111)
+    ax.plot(data['T [ms]'], data['AccX [mg]'], label='AccX (mg) en fonction du temps (T)')
+    ax.plot(data['T [ms]'], data_acc_y_filtered, label='AccY filtré (mg) en fonction du temps (T)')
+    ax.plot(data['T [ms]'], data['AccZ [mg]'], label='AccZ (mg) en fonction du temps (T)')
+    ax.set_xlabel('Temps (ms)')
+    ax.set_ylabel('Accélération (mg)')
+    ax.set_title('Graphique des données d\'accélération en fonction du temps')
+    ax.legend()
+    ax.grid(True)
 
+    global canvas
+    if canvas is not None:
+        canvas.get_tk_widget().destroy()
+    canvas = FigureCanvasTkAgg(fig, master=plot_frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    # Créer un graphique
-    plt.figure(figsize=(10, 6))
-    plt.plot(donnees['T [ms]'], donnees['AccX [mg]'], label='AccX en fonction de T')
-    if (FILTRE):
-        plt.plot(donnees['T [ms]'], donnees_acc_y_filtrees, label='AccY butter en fonction de T')
-    plt.plot(donnees['T [ms]'], donnees['AccY [mg]'], label='AccY en fonction de T')
-    plt.plot(donnees['T [ms]'], donnees['AccZ [mg]'], label='AccZ en fonction de T')
-    plt.xlabel('Temps (T) en ms')
-    plt.ylabel('Accélération')
-    plt.title('Données de l\'accéléromètre en fonction de T')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+def on_filter_button_click():
+    global donnees
+    donnees_filtrees = filter_data(donnees)
+    plot_data(donnees_filtrees)
 
+def main():
+    global donnees
+    donnees = load_csv_file()
+    if donnees is not None:
+        plot_data(donnees)
+        filter_button['state'] = 'normal'
 
-    plt.figure(figsize=(10, 6))
+# Création de la fenêtre principale
+root = tk.Tk()
+root.title("Data Analysis Tool")
 
-    plt.plot(donnees['T [ms]'], donnees['GyroY [mdps]'], label='GyroY en fonction de T')
-    plt.plot(donnees['T [ms]'], donnees['GyroX [mdps]'], label='GyroX en fonction de T')
-    plt.plot(donnees['T [ms]'], donnees['GyroZ [mdps]'], label='GyroZ en fonction de T')
+donnees = None
+canvas = None
 
-    plt.xlabel('Temps (T) en ms')
-    plt.ylabel('Gyroscope')
-    plt.title('Données du gyroscope en fonction de T')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+# Cadre pour le plot
+plot_frame = tk.Frame(root)
+plot_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# Bouton pour filtrer les données
+filter_button = tk.Button(root, text="Filtrer", command=on_filter_button_click, state='disabled')
+filter_button.pack(side=tk.RIGHT, padx=10, pady=10)
+
+# Démarrage automatique du traitement des données
+root.after(100, main)
+
+root.mainloop()

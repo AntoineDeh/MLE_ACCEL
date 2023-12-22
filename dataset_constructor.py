@@ -1,63 +1,72 @@
-import pathlib
-import numpy as np
+import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog
 import pandas as pd
-from matplotlib import pyplot as plt
-
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pathlib
 
 def strike(text):
-    result = ''
-    for c in text:
-        result = result + c + '\u0336'
-    return result
+    return ''.join([c + '\u0336' for c in text])
 
+def print_dataset(dataset, frame, title='Dataset state'):
+    for widget in frame.winfo_children():
+        widget.destroy()
 
-def print_dataset(dataset, title: str = 'Dataset state'):
-    plt.figure(figsize=(10, 6))
-    plt.subplot(2, 1, 1)
-    plt.plot(dataset['AccX [mg]'], label='AccX as a function of T')
-    plt.plot(dataset['AccY [mg]'], label='AccY as a function of T')
-    plt.plot(dataset['AccZ [mg]'], label='AccZ as a function of T')
-    plt.xlabel('Point number')
-    plt.ylabel('Acceleration')
-    plt.title(title)
+    fig, axs = plt.subplots(2, 1, figsize=(10, 6))
+    axs[0].plot(dataset['AccX [mg]'], label='AccX as a function of T')
+    axs[0].plot(dataset['AccY [mg]'], label='AccY as a function of T')
+    axs[0].plot(dataset['AccZ [mg]'], label='AccZ as a function of T')
+    axs[0].set_xlabel('Point number')
+    axs[0].set_ylabel('Acceleration')
+    axs[0].set_title(title)
+    axs[0].legend()
 
-    plt.subplot(2, 1, 2)
-    plt.plot(dataset['State'])
-    plt.xlabel('Point number')
-    plt.ylabel('State')
+    axs[1].plot(dataset['State'])
+    axs[1].set_xlabel('Point number')
+    axs[1].set_ylabel('State')
+    axs[1].grid(True)
 
-    plt.grid(True)
-    plt.show()
+    canvas = FigureCanvasTkAgg(fig, master=frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
 
+def add_file(dataset, headers, graph_frame):
+    file_path = filedialog.askopenfilename(initialdir="./output", filetypes=[("CSV Files", "*.csv")])
+    if file_path:
+        data = pd.read_csv(file_path, usecols=headers)
+        if data.shape[0] % 100 != 0:
+            messagebox.showerror("Error", f"File {file_path} has {data.shape[0]} rows, which is not a multiple of 100.")
+            return
 
-files_path = [f for f in pathlib.Path().glob("./output/*.csv")]
-for index, file_path in enumerate(files_path):
-    print(f"{index} - {file_path}")
+        add_data = messagebox.askyesno("Confirm", "Do you want to add these values to the dataset?")
+        if add_data:
+            dataset = pd.concat([dataset, data], ignore_index=True)
+            print_dataset(dataset, graph_frame, 'Actual dataset')
+    return dataset
+
+def export_dataset(dataset):
+    dataset_name = simpledialog.askstring("Dataset Name", "Enter the name of the dataset to export:")
+    if dataset_name:
+        dataset.to_csv(f'datasets/{dataset_name}.csv', index=False)
+        messagebox.showinfo("Success", f"Dataset exported as 'datasets/{dataset_name}.csv'.")
+
+# Création de la fenêtre principale
+root = tk.Tk()
+root.title("Dataset Manager")
 
 headers = ["AccX [mg]", "AccY [mg]", "AccZ [mg]", "State"]
 dataset = pd.DataFrame()
 
-while True:
-    entry = input("Enter the id of the file you want to add to the dataset or 'exit' to exit:")
+button_frame = tk.Frame(root)
+button_frame.pack(fill=tk.X, padx=10, pady=10)
 
-    if entry.lower() == 'exit' or entry.lower() == '':
-        break
+add_button = tk.Button(button_frame, text="Add File", command=lambda: add_file(dataset, headers, graph_frame))
+add_button.pack(side=tk.LEFT, padx=10)
 
-    file_selected = files_path[int(entry)]
+export_button = tk.Button(button_frame, text="Export Dataset", command=lambda: export_dataset(dataset))
+export_button.pack(side=tk.LEFT, padx=10)
 
-    data = pd.read_csv(file_selected, usecols=headers)
-    if data.shape[0] % 100:
-        print(f"File {file_selected} has {data.shape[0]} rows, which is not a multiple of 100, so it will be ignored")
-        continue
-    else:
-        print(f"File selected: {file_selected.name}")
+graph_frame = tk.Frame(root)
+graph_frame.pack(fill=tk.BOTH, expand=True)
 
-    action = input("Do you want to add this values in the dataset (Y/n): ")
-    if action.lower() == 'y' or action.lower() == 'yes' or action.lower() == '':
-        dataset = pd.concat([dataset, data], ignore_index=True)
-        print_dataset(dataset, 'Actual dataset')
-
-print_dataset(dataset)
-
-dataset_name = input("Enter the name of the dataset to export: ")
-dataset.to_csv(f'datasets/{dataset_name}.csv', index=False, header=True)
+root.mainloop()
