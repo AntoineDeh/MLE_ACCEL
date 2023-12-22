@@ -41,25 +41,17 @@ def plot_data(df, directory):
     # Reste du code pour tracer les graphiques...
 
 def load_csv_file():
-    """ Charge un fichier CSV et effectue des analyses et des visualisations. """
-    input_folder = simpledialog.askstring("Folder", "Enter the folder of the csv file:")
-    directory = verify_folder_input(input_folder)
-
-    if directory:
-        csv_file = simpledialog.askstring("CSV File", "Enter the name of the csv file:")
-        csv_flag, csv_path = verify_csv_input(csv_file, directory)
-
-        if csv_flag:
-            df = pd.read_csv(csv_path)
-            if 'T [ms]' not in df.columns:
-                add_t_column(df)
-
-            plot_data(df, directory)
-        else:
-            messagebox.showerror("Error", "Could not find csv file")
+    """ Charge un fichier CSV et retourne les données. """
+    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+    if file_path:
+        try:
+            return pd.read_csv(file_path)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load file: {e}")
+            return None
     else:
-        messagebox.showerror("Error", "Could not find the folder")
-
+        return None
+    
 # Création de la fenêtre principale
 root = tk.Tk()
 root.title("Data Analysis Tool")

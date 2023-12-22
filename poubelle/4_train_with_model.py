@@ -28,7 +28,22 @@ def load_dataset():
         except Exception as e:
             messagebox.showerror("Erreur", f"Erreur lors du chargement du fichier: {e}")
 
-def save_model():
+def build_model(input_shape1, input_shape2):
+    l2_regularizer = l2(0.01)
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Dense(DATA_POINTS, activation='relu', input_shape=(input_shape1, input_shape2)),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(50, activation='relu', kernel_regularizer=l2_regularizer),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(25, activation='relu', kernel_regularizer=l2_regularizer),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+    model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+
+    save_model(model)
+
+def save_model(model):
     file_path = filedialog.asksaveasfilename(title="Enregistrer le modèle", defaultextension=".h5",
                                              filetypes=[("H5 Files", "*.h5")])
     if file_path:
@@ -70,19 +85,7 @@ def train_model():
     except Exception as e:
         messagebox.showerror("Erreur", f"Erreur lors de l'entraînement du modèle: {e}")
 
-def build_model(input_shape1, input_shape2):
-    l2_regularizer = l2(0.01)
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Dense(DATA_POINTS, activation='relu', input_shape=(input_shape1, input_shape2)),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(50, activation='relu', kernel_regularizer=l2_regularizer),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(25, activation='relu', kernel_regularizer=l2_regularizer),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(1, activation='sigmoid')
-    ])
-    model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
-    return model
+
 
 def plot_graphs(history):
     fig = Figure(figsize=(10, 8), dpi=100)
@@ -111,14 +114,11 @@ def plot_graphs(history):
 root = tk.Tk()
 root.title("Gestionnaire de Modèle ML")
 
-load_button = tk.Button(root, text="Charger Dataset", command=load_dataset)
-load_button.pack(side=tk.LEFT, padx=10, pady=10)
+load_dataset()
 
-train_button = tk.Button(root, text="Entraîner Modèle", command=train_model)
-train_button.pack(side=tk.LEFT, padx=10, pady=10)
+build_model() # save_model() is including
 
-save_button = tk.Button(root, text="Enregistrer Modèle", command=save_model)
-save_button.pack(side=tk.LEFT, padx=10, pady=10)
+train_model() #plot_graphs() is including
 
 # Configuration des callbacks pour l'entraînement
 early_stopping = EarlyStopping(monitor='val_loss', patience=40, verbose=1, mode='min', restore_best_weights=True)
